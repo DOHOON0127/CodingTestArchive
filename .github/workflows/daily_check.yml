@@ -1,0 +1,24 @@
+name: Daily Stack Penalty
+
+on:
+  schedule:
+    # UTC 15:00 = KST 00:00 (자정)
+    - cron: "0 15 * * *"
+
+jobs:
+  penalty:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run Daily Penalty
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          SCORE_DB_ID: ${{ secrets.SCORE_DB_ID }}
+          NOTION_NAME: "김도훈" # 혹은 secrets.NOTION_NAME
+        run: python daily.py
