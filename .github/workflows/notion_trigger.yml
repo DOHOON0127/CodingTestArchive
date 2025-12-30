@@ -28,6 +28,7 @@ jobs:
         env:
           # [중요] 여기를 본인 노션 이름으로 수정해서 올리세요! (예: 김개발)
           NOTION_NAME: "김도훈"
+          
 
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           DATABASE_ID: ${{ secrets.DATABASE_ID }}
