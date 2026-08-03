@@ -14,57 +14,76 @@ bool inRange(int r, int c) {
 // k 4 l 2 -> 4 2 4 2
 int getSum(int i, int j, int k, int l) {
 
+    int move_num[4] = {k, l, k, l};
+
     int sum = 0;
-    int r = i;
-    int c = j;
 
-    int dir = 0;
-    
-    for(int a = 0; a < k; a++) {
-        sum += arr[r][c];
-            
-        r = r + dr[dir];
-        c = c + dc[dir];
+    for(int d = 0; d < 4; d++) {
+        for(int q = 0; q < move_num[d]; q++) {
+            i += dr[d];
+            j += dc[d];
 
-        if(!inRange(r,c)) return 0;
+            if(!inRange(i,j)) {
+                return 0;
+            }
+
+            sum += arr[i][j];
+        }
     }
 
-    dir++;
+    return sum;
 
-    for(int a = 0; a < l; a++) {
-        sum += arr[r][c];
+
+    // int r = i;
+    // int c = j;
+
+    // int dir = 0;
+    
+    // for(int a = 0; a < k; a++) {
+    //     sum += arr[r][c];
             
-        r = r + dr[dir];
-        c = c + dc[dir];
+    //     r = r + dr[dir];
+    //     c = c + dc[dir];
 
-        if(!inRange(r,c)) return 0;
-    }  
+    //     if(!inRange(r,c)) return 0;
+    // }
+
+    // dir++;
+
+    // for(int a = 0; a < l; a++) {
+    //     sum += arr[r][c];
+            
+    //     r = r + dr[dir];
+    //     c = c + dc[dir];
+
+    //     if(!inRange(r,c)) return 0;
+    // }  
     
 
-    dir++;
+    // dir++;
 
-    for(int a = 0; a < k; a++) {
-        sum += arr[r][c];
+    // for(int a = 0; a < k; a++) {
+    //     sum += arr[r][c];
             
-        r = r + dr[dir];
-        c = c + dc[dir];
+    //     r = r + dr[dir];
+    //     c = c + dc[dir];
 
-        if(!inRange(r,c)) return 0;
-    }  
+    //     if(!inRange(r,c)) return 0;
+    // }  
 
 
-    dir++;
+    // dir++;
 
-    for(int a = 0; a < l; a++) {
-        sum += arr[r][c];
+    // for(int a = 0; a < l; a++) {
+    //     sum += arr[r][c];
             
-        r = r + dr[dir];
-        c = c + dc[dir];
+    //     r = r + dr[dir];
+    //     c = c + dc[dir];
 
-        if(!inRange(r,c)) return 0;
-    }  
+    //     if(!inRange(r,c)) return 0;
+    // }  
 
-    return sum;
+    // return sum;
 
 }
 
