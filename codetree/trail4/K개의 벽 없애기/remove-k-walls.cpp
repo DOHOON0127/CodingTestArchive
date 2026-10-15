@@ -1,109 +1,83 @@
 #include <iostream>
 #include <vector>
+#include <climits>
 #include <queue>
 #include <cstring>
-#include <tuple>
-#include <climits>
+#include <algorithm>
 using namespace std;
 
 int n, k;
-int grid[100][100];
-int min_dist[100][100];
+int s_r, s_c, e_r, e_c;
+int arr[100][100];
+int arr_time[100][100];
 bool visited[100][100];
-int r1, c1, r2, c2;
+int min_time = INT_MAX;
 
 int dr[4] = {-1, 0, 1, 0};
 int dc[4] = {0, 1, 0, -1};
 
-int min_time = INT_MAX;
+vector<pair<int,int>> V_wall; // 벽의 위치를 다 담아놓는 배열
 
-// 갈 수 있는 곳 0, 갈 수 없는 곳 1(벽)
-// 한 칸 이동시 1초 소요
+// 4 2
+// 0 0 0 0
+// 0 1 1 1
+// 1 1 1 1
+// 0 1 0 0
+// 1 1
+// 4 4
 
-
-// 일단 1들 중에서 K개를 골라서 0으로 바꾸는 함수를 만들고
-// 그 다음에 K개가 0으로 바꿔진 grid에서
-// BFS를 돌려서 거리를 표시한 다음에 최단거리를 뽑는데
-// 만약에 그때 도착점에 도달할 수 없다면 -1을 출력하면 될 것 같음
-
-
-void BFS(int ir, int ic) {
-
-    memset(visited, false, sizeof(visited));
-    memset(min_dist, 0, sizeof(min_dist));
-
-    queue<pair<int, int>> Q;
-    Q.push({ir, ic});
-    visited[ir][ic] = true;
-    min_dist[ir][ic] = 0;
-
-    while(!Q.empty()) {
-        int r, c;
-        tie(r,c) = Q.front();
-        Q.pop();
-
-        for(int i = 0; i < 4; i++) {
-            int nr = r + dr[i];
-            int nc = c + dc[i];
-
-            if(nr >= 0 && nr < n && nc >= 0 && nc < n && visited[nr][nc] == false
-            && grid[nr][nc] == 0) {
-
-                Q.push({nr, nc});
-                visited[nr][nc] = true;
-                min_dist[nr][nc] = min_dist[r][c] + 1;
-            }
-        }
-    }
+bool inRange(int r, int c) {
+    return (r >= 0 && r < n && c >= 0 && c < n);
 }
 
+void bfs() {
+    queue<pair<int, int>> Q;
+    memset(visited, false, sizeof(visited));
+    memset(arr_time, 0, sizeof(arr_time));
 
-// 1들 중에서 k개를 골라서 0으로 바꾸는 함수
-// idx : 0 ~ n*n-1까지의 인덱스
-// cnt 고른 점의 개수
+    Q.push({s_r, s_c});
+    visited[s_r][s_c] = true;
 
-vector<pair<int, int>> v_k;
+    while (!Q.empty()) {
+        auto [r,c] = Q.front();
+        Q.pop();
 
-void chageKto0(int idx, int cnt) {
+        for (int dir = 0; dir < 4; dir++) {
+            int nr = r + dr[dir];
+            int nc = c + dc[dir];
 
-    if(cnt == k) {
+            if (!inRange(nr, nc)) continue;
+            if (visited[nr][nc]) continue;
+            if (arr[nr][nc] == 1) continue;
 
-        for(int i = 0; i < (int)v_k.size(); i++) {
-            grid[v_k[i].first][v_k[i].second] = 0;
+            Q.push({nr, nc});
+            visited[nr][nc] = true;
+            arr_time[nr][nc] = arr_time[r][c] + 1;
         }
+    }
 
-        BFS(r1, c1);
+}
 
-        if(min_dist[r2][c2] != 0) {
-            if(min_time > min_dist[r2][c2]) {
-                min_time =  min_dist[r2][c2];
-            }
+void choose(int start, int end) {
+    if (end == k) {
+        bfs();
+        if (arr_time[e_r][e_c] == 0) {
+            // cout << -1;
+        }else {
+            min_time = min(min_time, arr_time[e_r][e_c]);
         }
-
-        for(int i = 0; i < (int)v_k.size(); i++) {
-            grid[v_k[i].first][v_k[i].second] = 1;
-        }
-
         return;
     }
 
-    if(idx == n * n) {
-        return;
+    for (int i = start; i < V_wall.size(); i++) {
+        auto [r,c] = V_wall[i];
+
+        arr[r][c] = 0;
+
+        choose(i+1, end+1);
+
+        arr[r][c] = 1;
     }
-
-    int r = idx / n;
-    int c = idx % n;
-
-    if(grid[r][c] == 1) {
-        v_k.push_back({r, c});
-        chageKto0(idx+1, cnt+1);
-        v_k.pop_back();
-
-        chageKto0(idx+1, cnt);
-    }else{
-        chageKto0(idx+1, cnt);
-    }
-
 }
 
 int main() {
@@ -111,29 +85,28 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            cin >> grid[i][j];
+            cin >> arr[i][j];
+            if (arr[i][j] == 1) {
+                V_wall.push_back({i,j});
+            }
         }
     }
 
-    cin >> r1 >> c1; // 시작점
-    cin >> r2 >> c2; // 도착점
+    cin >> s_r >> s_c;
+    s_r--;
+    s_c--;
 
-    r1--;
-    c1--;
-    r2--;
-    c2--;
+    cin >> e_r >> e_c;
+    e_r--;
+    e_c--;
 
-    // Please write your code here.
+    choose(0, 0);
 
-    chageKto0(0, 0);
-
-    if(min_time == INT_MAX) {
+    if (min_time == INT_MAX) {
         cout << -1;
-    }
-    else{
+    }else {
         cout << min_time;
     }
-
 
     return 0;
 }
